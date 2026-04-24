@@ -1,11 +1,7 @@
 import ChatPage from "./pages/ChatPage";
 
 function App() {
-  return (
-    <div>
-      <ChatPage />
-    </div>
-  );
+  return <ChatPage />;
 }
 
 export default App;
