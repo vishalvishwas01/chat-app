@@ -14,12 +14,6 @@ const MessageList = ({ messages = [], currentUser }) => {
     <div className="message-list">
       {messages.length === 0 ? (
         <div className="empty-messages">
-          <div className="empty-icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M21 11.5C21 16.75 16.75 21 11.5 21C6.25 21 2 16.75 2 11.5C2 6.25 6.25 2 11.5 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              <path d="M22 3L15.5 9.5L22 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
           <p>No messages yet</p>
           <span>Start the conversation!</span>
         </div>

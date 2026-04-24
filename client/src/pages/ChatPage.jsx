@@ -20,8 +20,8 @@ const ChatPage = () => {
   const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
-    if ("scrollRestoration" in window.history) {
-      window.history.scrollRestoration = "manual";
+    if ("scrollRestoration" in globalThis.history) {
+      globalThis.history.scrollRestoration = "manual";
     }
 
     onReceiveMessage((msg) => {
@@ -91,13 +91,7 @@ const ChatPage = () => {
 
       <div className="login-card">
         <div className="login-header">
-          <div className="logo-container">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="logo-icon">
-              <path d="M21 11.5C21 16.75 16.75 21 11.5 21C6.25 21 2 16.75 2 11.5C2 6.25 6.25 2 11.5 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              <path d="M22 3L15.5 9.5L22 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
-          <h1 className="login-title">Welcome to Chat</h1>
+          <h1 className="login-title">Welcome to Chat-App</h1>
           <p className="login-subtitle">Connect with your team in real-time</p>
         </div>
 

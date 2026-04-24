@@ -18,7 +18,7 @@ body {
   overscroll-behavior: none;
 }
 
-/* Premium Login Page Styles */
+/* Login Page */
 .login-container {
   min-height: 100vh;
   display: flex;
@@ -108,7 +108,7 @@ body {
   }
 }
 
-/* Login Card - Glassmorphism */
+/* Login Card  */
 .login-card {
   position: relative;
   z-index: 10;
@@ -227,7 +227,7 @@ body {
   border: 2px solid rgba(255, 255, 255, 0.15);
   border-radius: 14px;
   font-size: 16px;
-  color: white;
+  color: #ffffff;
   outline: none;
   transition: all 0.3s ease;
   box-sizing: border-box;
@@ -251,7 +251,7 @@ body {
   border-color: rgba(255, 255, 255, 0.25);
 }
 
-/* Premium Button */
+/* Button */
 .login-button {
   position: relative;
   width: 100%;
@@ -348,10 +348,7 @@ body {
     height: 28px;
   }
 }
-
-/* ============================================
-   PREMIUM CHAT BOX STYLES
-   ============================================ */
+/* chat container */
 
 .chat-container {
   position: fixed;
