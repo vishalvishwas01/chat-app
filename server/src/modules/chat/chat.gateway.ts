@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import {
   WebSocketGateway,
   WebSocketServer,
@@ -9,6 +11,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 import { CreateMessageDto } from './dto/create-message.dto';
+import { AuditService } from '../../common/logger/audit.service';
 
 @WebSocketGateway({
   cors: {
@@ -17,9 +20,12 @@ import { CreateMessageDto } from './dto/create-message.dto';
 })
 export class ChatGateway implements OnGatewayDisconnect {
   @WebSocketServer()
-  server: Server | undefined;
+  server!: Server;
 
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly auditService: AuditService,
+  ) {}
 
   // store users per room
   private onlineUsers: Record<
@@ -33,42 +39,72 @@ export class ChatGateway implements OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
   ) {
     const { room, username } = data;
-    void client.join(room);
 
-    // store user
-    if (!this.onlineUsers[room]) {
-      this.onlineUsers[room] = [];
+    try {
+      client.join(room);
+
+      // store user
+      if (!this.onlineUsers[room]) {
+        this.onlineUsers[room] = [];
+      }
+
+      this.onlineUsers[room].push({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        socketId: client.id,
+        username,
+      });
+
+      // audit log
+      await this.auditService.logAction('USER_JOINED', username);
+
+      // send chat history
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const messages = await this.chatService.getMessagesByRoom(room);
+      client.emit('chat_history', messages);
+
+      // broadcast users
+      this.server.to(room).emit(
+        'online_users',
+        this.onlineUsers[room].map((u) => u.username),
+      );
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      await this.auditService.logError(
+        'USER_JOIN_FAILED',
+        username || 'unknown',
+        errorMessage,
+        'handleJoinRoom',
+      );
     }
-
-    this.onlineUsers[room].push({
-      socketId: client.id,
-      username,
-    });
-
-    // send chat history
-    const messages = await this.chatService.getMessagesByRoom(room);
-    client.emit('chat_history', messages);
-
-    // broadcast updated users list
-    this.server!.to(room).emit(
-      'online_users',
-      this.onlineUsers[room].map((u) => u.username),
-    );
   }
 
   @SubscribeMessage('send_message')
   async handleSendMessage(@MessageBody() payload: CreateMessageDto) {
-    console.log(`Message received:`, payload);
-    const message = await this.chatService.createMessage(
-      payload.sender,
-      payload.content,
-      payload.room,
-    );
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const message = await this.chatService.createMessage(
+        payload.sender,
+        payload.content,
+        payload.room,
+      );
 
-    this.server!.to(payload.room).emit('receive_message', message);
+      // audit log
+      await this.auditService.logAction('MESSAGE_SENT', payload.sender);
+
+      this.server.to(payload.room).emit('receive_message', message);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      await this.auditService.logError(
+        'MESSAGE_FAILED',
+        payload.sender || 'unknown',
+        errorMessage,
+        'handleSendMessage',
+      );
+    }
   }
 
-  // handle disconnect
   handleDisconnect(client: Socket) {
     for (const room in this.onlineUsers) {
       const users = this.onlineUsers[room];
@@ -78,8 +114,7 @@ export class ChatGateway implements OnGatewayDisconnect {
       if (updatedUsers.length !== users.length) {
         this.onlineUsers[room] = updatedUsers;
 
-        // broadcast updated list
-        this.server!.to(room).emit(
+        this.server.to(room).emit(
           'online_users',
           updatedUsers.map((u) => u.username),
         );
