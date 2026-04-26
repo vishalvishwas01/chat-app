@@ -2,6 +2,9 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ExportService } from './queue/export.service';
+import './queue/export.worker';
+import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -30,9 +33,13 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
+  app.use('/exports', express.static('/app/exports'));
+
   await app.listen(3000);
 
   console.log(`Server running on http://localhost:3000`);
   console.log('DEMO_Var: ', process.env.DEMO_VAR);
+  const exportService = app.get(ExportService);
+  await exportService.addExportJob('vishal');
 }
 void bootstrap();

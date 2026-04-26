@@ -26,3 +26,11 @@ model ErrorLog {
   auditLog   AuditLog @relation(fields: [auditLogId], references: [id])
   auditLogId Int
 }
+
+model ExportLog {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  status    String   // pending | processing | completed
+  fileName  String?
+  createdAt DateTime @default(now())
+}
