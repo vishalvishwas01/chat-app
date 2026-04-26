@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import {
   WebSocketGateway,
   WebSocketServer,
@@ -41,7 +39,7 @@ export class ChatGateway implements OnGatewayDisconnect {
     const { room, username } = data;
 
     try {
-      client.join(room);
+      await client.join(room);
 
       // store user
       if (!this.onlineUsers[room]) {
@@ -49,7 +47,6 @@ export class ChatGateway implements OnGatewayDisconnect {
       }
 
       this.onlineUsers[room].push({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         socketId: client.id,
         username,
       });
@@ -58,7 +55,7 @@ export class ChatGateway implements OnGatewayDisconnect {
       await this.auditService.logAction('USER_JOINED', username);
 
       // send chat history
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
       const messages = await this.chatService.getMessagesByRoom(room);
       client.emit('chat_history', messages);
 
@@ -82,7 +79,6 @@ export class ChatGateway implements OnGatewayDisconnect {
   @SubscribeMessage('send_message')
   async handleSendMessage(@MessageBody() payload: CreateMessageDto) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const message = await this.chatService.createMessage(
         payload.sender,
         payload.content,
