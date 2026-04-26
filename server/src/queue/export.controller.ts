@@ -2,9 +2,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/require-await */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { Controller, Post, Get, Query } from '@nestjs/common';
+import { Controller, Post, Get, Query, Param, Res } from '@nestjs/common';
 import { ExportService } from './export.service';
 import { PrismaService } from '../prisma/prisma.service';
+import type { Response } from 'express';
 
 @Controller('export')
 export class ExportController {
@@ -24,5 +25,11 @@ export class ExportController {
       where: { userId },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  @Get('download/:fileName')
+  downloadFile(@Param('fileName') fileName: string, @Res() res: Response) {
+    const filePath = `/app/exports/${fileName}`;
+    return res.download(filePath);
   }
 }
