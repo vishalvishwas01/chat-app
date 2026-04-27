@@ -11,7 +11,6 @@ export class ExportService {
   constructor(private readonly prisma: PrismaService) {}
 
   async addExportJob(userId: string) {
-    // 1. create DB record
     const record = await this.prisma.exportLog.create({
       data: {
         userId,
@@ -19,7 +18,6 @@ export class ExportService {
       },
     });
 
-    // 2. add job with record id
     await exportQueue.add('export-audit-logs', {
       userId,
       exportId: record.id,
