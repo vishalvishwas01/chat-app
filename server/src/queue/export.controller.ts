@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/require-await */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Controller, Post, Get, Query, Param, Res } from '@nestjs/common';
 import { ExportService } from './export.service';
 import { PrismaService } from '../prisma/prisma.service';

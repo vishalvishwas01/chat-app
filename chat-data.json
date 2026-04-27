@@ -1,0 +1,4 @@
+[
+  { "sender": "user1", "content": "Hello world", "room": "room3" },
+  { "sender": "user2", "content": "Hi there", "room": "room3" }
+]

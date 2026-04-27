@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
 import { exportQueue } from './export.queue';
 import { PrismaService } from '../prisma/prisma.service';
@@ -24,5 +20,12 @@ export class ExportService {
     });
 
     return record;
+  }
+
+  async addImportJob(filePath: string, userId: string) {
+    return exportQueue.add('import-chat-history', {
+      filePath,
+      userId,
+    });
   }
 }

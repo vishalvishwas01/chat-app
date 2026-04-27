@@ -16,6 +16,6 @@ import { ExportController } from '../../queue/export.controller';
   ],
   providers: [ChatGateway, ChatService, AuditService, ExportService],
   controllers: [ChatController, ExportController],
-  exports: [ChatService],
+  exports: [ChatService, ExportService],
 })
 export class ChatModule {}

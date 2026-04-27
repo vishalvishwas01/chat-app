@@ -10,7 +10,8 @@ services:
       - MONGO_URI=mongodb://mongo:27017/chat-app
       - DEMO_VAR=vishal_vishwas
     volumes:
-      - exports_data:/app/exports 
+      - exports_data:/app/exports
+      - imports:/app/imports
     depends_on:
       - mongo
       - postgres
@@ -55,3 +56,4 @@ volumes:
   mongo_data:
   pg_data:
   exports_data:
+  imports:
